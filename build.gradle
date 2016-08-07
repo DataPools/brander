@@ -1,0 +1,49 @@
+apply plugin: 'idea'
+apply plugin: 'java'
+
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+configurations {
+    provided
+    shadow
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+        resources {
+            srcDir 'src'
+        }
+    }
+    main {
+        compileClasspath += configurations.provided
+        compileClasspath += configurations.shadow
+    }
+}
+
+jar {
+    version = null
+    manifest {
+        attributes (
+            'Premain-Class': 'com.squidhq.brander.Agent'
+        )
+    }
+    from { 
+        configurations.shadow.collect { 
+            it.isDirectory() ? it : zipTree(it) 
+        } 
+    }
+}
+
+repositories {
+    mavenLocal()
+    jcenter()
+}
+
+dependencies {
+    compile 'org.javassist:javassist:3.20.0-GA'
+    shadow 'org.javassist:javassist:3.20.0-GA'
+}
