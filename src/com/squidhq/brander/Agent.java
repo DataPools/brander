@@ -22,9 +22,7 @@ public class Agent implements ClassFileTransformer {
 			return null;
 		}
 		className = className.replace("/", ".");
-		if (!className.equals("net.minecraft.client.ClientBrandRetriever")) {
-			return null;	
-		}
+		if (className.equals("net.minecraft.client.ClientBrandRetriever")) {
 		try {
 			ClassPool pool = ClassPool.getDefault();
 			pool.appendClassPath(new ByteArrayClassPath(className, bytes));
@@ -41,7 +39,24 @@ public class Agent implements ClassFileTransformer {
 		} catch(Exception exception) {
 			exception.printStackTrace();
 		}
+	        }
+		 else if (className.equals("io.netty.bootstrap.Bootstrap")) {
+		  try {
+                    ClassPool pool = ClassPool.getDefault();
+                    pool.appendClassPath(new ByteArrayClassPath(className, bytes));
+
+                    CtClass ctClass = pool.get(className);
+                    CtMethod method = ctClass.getMethod("isBlockedServerHostName", "(Ljava/lang/String;)Z");
+                    method.setBody("{ return false; }");
+                    return ctClass.toBytecode();
+		  }
+		  catch(Exception exception) {
+			  exception.printStackTrace();
+		  }
+                }
+		else {
 		return null;
+		}
 	}
 
 }
