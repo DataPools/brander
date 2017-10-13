@@ -53,9 +53,8 @@ public class Agent implements ClassFileTransformer {
 		  catch(Exception exception) {
 			  exception.printStackTrace();
 		  }
-		else {
+		 }
 		return null;
-		}
 	}
 
 }
